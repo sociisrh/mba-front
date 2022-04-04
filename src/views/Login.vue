@@ -236,11 +236,9 @@ export default {
           store
             .dispatch("auth/login", data)
             .then((resp) => {
-              if (resp === true) {
-                const userData = JSON.stringify(localStorage.getItem("user"));
+              if (resp === true) {             
                 const userToken = localStorage.getItem("accessToken");
-
-                if (userToken === undefined) {
+                if (userToken !== undefined) {
                   store.dispatch("auth/dadosUsuario");
                 } else {
                   localStorage.removeItem("accessToken");

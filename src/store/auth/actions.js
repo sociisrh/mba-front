@@ -11,11 +11,11 @@ async function login({ commit, dispatch }, user) {
     })
       .then((response) => {
         if (response.status === 200)
-        {
-          console.log(response.data.data)
+        {          
           const token = response.data.data.access_token;
           localStorage.setItem("accessToken", token);
           axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+          console.log(localStorage.setItem("accessToken", token))
           resolve(true);
         }
         resolve(false);
