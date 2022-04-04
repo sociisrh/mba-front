@@ -2,7 +2,6 @@ import axios from "axios";
 import router from "@/router";
 import { Ability, AbilityBuilder } from "@casl/ability";
 
-
 async function login({ commit, dispatch }, user) {
   return new Promise((resolve, reject) => {
     axios({
@@ -11,7 +10,9 @@ async function login({ commit, dispatch }, user) {
       method: "POST",
     })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 200)
+        {
+          console.log(response.data.data)
           const token = response.data.data.access_token;
           localStorage.setItem("accessToken", token);
           axios.defaults.headers.common["Authorization"] = "Bearer " + token;
@@ -20,14 +21,9 @@ async function login({ commit, dispatch }, user) {
         resolve(false);
       })
       .catch((erro) => {
-        console.error("Oops, Unable to login! teste");
+        console.error("Oops, Unable to login!");
         console.log("error :>> ", erro.response);
-        dispatch("module/openSnackBar", {
-          color: "error",
-          timeout: 10000,
-          text: "Oops, dados invalidos.",
-        });
-        resolve(false);
+        reject(erro.response);
       });
   });
 }
