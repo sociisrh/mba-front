@@ -139,7 +139,7 @@ export default {
           }
           store.dispatch('auth/recuperarSenha', data)
           .then(response => {
-            console.log(response)
+            
           })
           .catch( erro => {
             this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })

@@ -192,7 +192,7 @@ export default {
     this.token = token.split('=')
     store.dispatch('auth/validarToken', token)
     .then(response => {
-      console.log(response)
+      
     })
     .catch( erro => {
       this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })

@@ -14,8 +14,7 @@ async function login({ commit, dispatch }, user) {
         {          
           const token = response.data.data.access_token;
           localStorage.setItem("accessToken", token);
-          axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-          console.log(localStorage.setItem("accessToken", token))
+          axios.defaults.headers.common["Authorization"] = "Bearer " + token;          
           resolve(true);
         }
         resolve(false);
@@ -138,7 +137,6 @@ async function register({ commit, dispatch }, data) {
       method: "POST",
     })
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
           resolve(true);
         }
