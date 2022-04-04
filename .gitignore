@@ -15,7 +15,6 @@ package-lock
 
 .DS_Store
 node_modules
-/dist
 
 
 # Log files
