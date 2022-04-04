@@ -28,6 +28,19 @@
           <p class="mb-2">Comece agora organizar seu empreendimento</p>
         </v-card-text>
 
+        <v-card-text>
+          <v-alert text color="primary">
+            <small class="d-block mb-1">
+              Admin e-mail: <strong>admin@manutencao.com</strong> / Senha:
+              <strong>admin</strong>
+            </small>
+            <small>
+              Construtora e-mail: <strong>construtora@manutencao.com</strong> /
+              Senha: <strong>devomudar</strong>
+            </small>
+          </v-alert>
+        </v-card-text>
+
         <!-- login form -->
         <v-card-text>
           <v-text-field
@@ -70,12 +83,12 @@
           ></v-text-field>
 
           <div class="d-flex align-center justify-space-between flex-wrap">
-            <v-checkbox hide-details label="Remember Me" class="mt-0">
+            <v-checkbox hide-details label="Lembre se mim" class="mt-0">
             </v-checkbox>
 
             <!-- forget link -->
             <router-link :to="{ name: 'auth-forgot-password' }" class="ms-3">
-              Forgot Password?
+              Esqueceu a senha?
             </router-link>
           </div>
 
@@ -107,7 +120,13 @@
 
         <!-- social links -->
         <v-card-actions class="d-flex justify-center">
-          <v-btn v-for="link in socialLink" :key="link.icon" icon class="ms-1" @click="validAction(link.action)">
+          <v-btn
+            v-for="link in socialLink"
+            :key="link.icon"
+            icon
+            class="ms-1"
+            @click="validAction(link.action)"
+          >
             <v-icon
               :color="$vuetify.theme.dark ? link.colorInDark : link.color"
             >
@@ -122,7 +141,12 @@
     <img
       class="auth-mask-bg"
       height="173"
-      :src="require(`@/assets/images/misc/mask-${$vuetify.theme.dark ? 'dark' : 'light' }.png`)"/>
+      :src="
+        require(`@/assets/images/misc/mask-${
+          $vuetify.theme.dark ? 'dark' : 'light'
+        }.png`)
+      "
+    />
 
     <!-- tree -->
     <v-img
@@ -163,19 +187,19 @@ export default {
         icon: mdiFacebook,
         color: "#4267b2",
         colorInDark: "#4267b2",
-        action: 'facebook'
+        action: "facebook",
       },
       {
         icon: mdiGithub,
         color: "#272727",
         colorInDark: "#fff",
-        action: 'github'
+        action: "github",
       },
       {
         icon: mdiGoogle,
         color: "#db4437",
         colorInDark: "#db4437",
-        action: 'google'
+        action: "google",
       },
     ],
     icons: {
@@ -215,8 +239,17 @@ export default {
               if (resp === true) {
                 const userData = JSON.stringify(localStorage.getItem("user"));
                 const userToken = localStorage.getItem("accessToken");
-                if (userData !== undefined && userToken !== undefined) {
+
+                if (userToken === undefined) {
                   store.dispatch("auth/dadosUsuario");
+                } else {
+                  localStorage.removeItem("accessToken");
+                  localStorage.removeItem("user");
+                  this.$store.dispatch("module/openSnackBar", {
+                    color: "error",
+                    timeout: 10000,
+                    text: "Oops, E-mail e senha informados não foram encontrados na base dados.",
+                  });
                 }
               }
             })
@@ -239,33 +272,32 @@ export default {
     async loginGithub() {
       store.dispatch("auth/loginGithub").then((resp) => {
         if (resp.data.data) {
-          window.location.href = resp.data.data
+          window.location.href = resp.data.data;
         }
       });
     },
-    validAction(item)
-    {
+    validAction(item) {
       switch (item) {
-        case 'github':
+        case "github":
           this.loginGithub();
           break;
-        case 'facebook':
+        case "facebook":
           this.$store.dispatch("module/openSnackBar", {
             color: "error",
             timeout: 3000,
             text: "Oops, tivemos um problema por aqui, tente com o GitHub, por favor.",
           });
           break;
-        case 'google':
-            this.$store.dispatch("module/openSnackBar", {
-              color: "error",
-              timeout: 3000,
-              text: "Oops, tivemos um problema por aqui, tente com o GitHub, por favor.",
-            });
-          
-          break;     
+        case "google":
+          this.$store.dispatch("module/openSnackBar", {
+            color: "error",
+            timeout: 3000,
+            text: "Oops, tivemos um problema por aqui, tente com o GitHub, por favor.",
+          });
+
+          break;
       }
-    }
+    },
   },
   created() {
     if (this.erroMessage !== "") {

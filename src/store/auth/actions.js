@@ -2,6 +2,7 @@ import axios from "axios";
 import router from "@/router";
 import { Ability, AbilityBuilder } from "@casl/ability";
 
+
 async function login({ commit, dispatch }, user) {
   return new Promise((resolve, reject) => {
     axios({
@@ -19,9 +20,14 @@ async function login({ commit, dispatch }, user) {
         resolve(false);
       })
       .catch((erro) => {
-        console.error("Oops, Unable to login!");
+        console.error("Oops, Unable to login! teste");
         console.log("error :>> ", erro.response);
-        reject(erro.response);
+        dispatch("module/openSnackBar", {
+          color: "error",
+          timeout: 10000,
+          text: "Oops, dados invalidos.",
+        });
+        resolve(false);
       });
   });
 }
