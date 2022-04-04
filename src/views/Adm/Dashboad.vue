@@ -19,10 +19,10 @@ export default {
   components: {
     
   },
-  setup() {
+  setup(){
     
     onMounted(() => {
-      document.location.reload(true);
+      
     })
     return {
 
