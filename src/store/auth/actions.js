@@ -57,6 +57,10 @@ async function loginUserCallback({ commit, dispatch }, payload) {
           axios.defaults.headers.common["Authorization"] = "Bearer " + token;
           resolve(response);
         }
+        if (response.status === 200 && (response.data.data.codigo == 10 || response.data.data.codigo == 1))
+        {
+          resolve(response);
+        }
       })
       .catch((erro) => {
         reject(erro);

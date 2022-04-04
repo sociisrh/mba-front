@@ -83,6 +83,7 @@ export default {
       store
         .dispatch("auth/loginUserCallback", { code: this.payload })
         .then((resp) => {
+          console.log(resp)
           if (resp.data.data.access_token) {
             const userData = JSON.stringify(localStorage.getItem("user"));
             const userToken = localStorage.getItem("accessToken");
@@ -98,7 +99,17 @@ export default {
             });
             setTimeout(() => {
               this.$router.push('/login')
-            }, 3000);
+            }, 300);
+          }
+          else if (resp.data.data.codigo = 1) {
+            this.$store.dispatch("module/openSnackBar", {
+              color: "primary",
+              timeout: 10000,
+              text: resp.data.data.menssagem,
+            });
+            setTimeout(() => {
+              this.$router.push('/login')
+            }, 300);
           }
         })
         .catch(() => {

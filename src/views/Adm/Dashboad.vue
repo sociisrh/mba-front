@@ -9,3 +9,27 @@
     </v-card>
   </div>
 </template>
+<script>
+import store from "@/store";
+import { onUnmounted, onMounted, ref, reactive, computed, nextTick, watch, onUpdated } from "@vue/composition-api";
+
+
+export default {
+  name: "Dashboard-Administrativo",
+  components: {
+    
+  },
+  setup() {
+    
+    onMounted(() => {
+      document.location.reload(true);
+    })
+    return {
+
+    }
+  },
+};
+</script>
+
+<style>
+</style>
