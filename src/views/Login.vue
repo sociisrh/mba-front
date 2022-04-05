@@ -185,7 +185,7 @@ export default {
 
     const vm = getCurrentInstance().proxy;
     const { router } = useRouter();
-
+    const auth_success = ref(false);
     const isPasswordVisible = ref(false);
     const loadingBtnLogin = ref(false);
     const email = ref("admin@materio.com");
@@ -226,47 +226,61 @@ export default {
           password: password.value,
         })
         .then((response) => {
-          const token = response.data.data.access_token;
-          localStorage.setItem("accessToken", token);
-          return response;
+          const dados = response.data.data
+          if (dados.status) {
+            const token = dados.access_token;
+            localStorage.setItem("accessToken", token);
+            auth_success.value = true;
+            return response;
+
+          } else {
+            auth_success.value = false;
+            store.dispatch("module/openSnackBar", {
+              color: "error",
+              timeout: 3000,
+              text: "Oops, e-mail e senhas informados não encontrados."
+            });
+            return response;
+          }
+          /**/
         })
         .then(() => {
-          setTimeout(() => {
-            store.dispatch("auth/dadosUsuario").then((result) => {
-              if (result.data.data.user) {
-                const user = result.data.data.user;
+          if (auth_success.value) {
+              store.dispatch("auth/dadosUsuario").then((result) => {
+                if (result.data.data.user) {
+                  const user = result.data.data.user;
 
-                const { ability: userAbility } = user;
+                  const { ability: userAbility } = user;
 
-                // Set user ability
-                // ? https://casl.js.org/v5/en/guide/intro#update-rules
-                vm.$ability.update(userAbility);
+                  // Set user ability
+                  // ? https://casl.js.org/v5/en/guide/intro#update-rules
+                  vm.$ability.update(userAbility);
 
-                // Set user's ability in localStorage for Access Control
-                localStorage.setItem(
-                  "userAbility",
-                  JSON.stringify(userAbility)
-                );
+                  // Set user's ability in localStorage for Access Control
+                  localStorage.setItem(
+                    "userAbility",
+                    JSON.stringify(userAbility)
+                  );
 
-                // We will store `userAbility` in localStorage separate from userData
-                // Hence, we are just removing it from user object
-                delete user.ability;
+                  // We will store `userAbility` in localStorage separate from userData
+                  // Hence, we are just removing it from user object
+                  delete user.ability;
 
-                // Set user's data in localStorage for UI/Other purpose
-                localStorage.setItem("userData", JSON.stringify(user));
-                localStorage.setItem("user", JSON.stringify(user));
-                localStorage.setItem("role", user.role);
+                  // Set user's data in localStorage for UI/Other purpose
+                  localStorage.setItem("userData", JSON.stringify(user));
+                  localStorage.setItem("user", JSON.stringify(user));
+                  localStorage.setItem("role", user.role);
 
-                store.commit("auth/setUser", user);
-                store.commit("auth/setUsuario", user);
-                store.commit("auth/auth_status", "LOGADO");
-                store.commit("auth/setRole", user.role);
-                loadingBtnLogin.value = false;
-                
-                router.push("/");
-              }
-            });
-          }, 2000);
+                  store.commit("auth/setUser", user);
+                  store.commit("auth/setUsuario", user);
+                  store.commit("auth/auth_status", "LOGADO");
+                  store.commit("auth/setRole", user.role);
+                  
+
+                  router.push("/");
+                }
+              });
+          } 
         })
         .catch((error) => {
           // TODO: Next Update - Show notification
@@ -275,7 +289,7 @@ export default {
           errorMessages.value = error.response.data.error;
         })
         .finally(() => {
-          
+          loadingBtnLogin.value = false;
         });
     };
 
