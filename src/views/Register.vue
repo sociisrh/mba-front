@@ -232,8 +232,7 @@ export default {
       this.$validator.validateAll()
       .then((result) => {
         if(result === true)
-        {
-          this.$store.dispatch('module/openSnackBar', { color: 'default', timeout: 10000, text: 'TEste' })
+        {          
           const data = {
             name: username.value,
             email: email.value,
@@ -242,7 +241,10 @@ export default {
           }
           store.dispatch('auth/register', data)
           .then(response => {
-            console.log(response)
+            if (response.data.data) {
+              this.$store.dispatch('module/openSnackBar', { color: 'success', timeout: 10000, text: 'Cadatro realizado com sucesso!' });
+              this.$router.push('/login');
+            }
           })
           .catch( erro => {
             this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })
