@@ -1,5 +1,4 @@
 import axios from "axios";
-import axiosIns from '@axios'
 
 async function login({ commit, dispatch }, data) {
   return new Promise((resolve, reject) => {
@@ -138,7 +137,7 @@ async function register({ commit, dispatch }, data) {
 async function dadosUsuario({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     const token = localStorage.getItem('accessToken')
-    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     axios
     .get(process.env.VUE_APP_BASE_URI_API_MANUTENCAO + "/v1/usuario/dados-usuario")
     .then(response => resolve(response))

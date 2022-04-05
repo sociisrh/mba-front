@@ -1,5 +1,8 @@
 import axios from "@axios";
 
+
+
+
 export default {
   namespaced: true,
   state: {
@@ -23,7 +26,9 @@ export default {
   },
   actions: {
     fetchRoles(ctx) {
+      
       return new Promise((resolve, reject) => {
+        
         axios
           .get('/v1/acl/role')
           .then(response => resolve(response))

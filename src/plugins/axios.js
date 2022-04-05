@@ -1,13 +1,14 @@
 // axios
 import axios from 'axios'
 import Vue from 'vue'
-
+import store from '@/store'
 const token = localStorage.getItem('accessToken')
+console.log("Token: ", token)
 
 const axiosIns = axios.create({
   baseURL:  process.env.VUE_APP_BASE_URI_API_MANUTENCAO,
   headers: {
-    Authorization: "Bearer " + token
+    Authorization: (token) ? `Bearer ${token}` : localStorage.getItem('accessToken')
   }
 });
 

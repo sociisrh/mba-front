@@ -13,10 +13,10 @@
 
     <div class="page-title text-center px-5">
       <h2 class="text-2xl font-weight-semibold text--primary">
-        You are not authorized! 🔐
+        Você não está autorizado! 🔐
       </h2>
       <p class="text-sm">
-        You don’t have permission to access this page. Go Home!
+        Você não tem permissão para acessar esta página!
       </p>
 
       <div class="misc-character d-flex justify-center">
@@ -31,7 +31,7 @@
         to="/"
         class="mb-4"
       >
-        Back to home
+        VOLTAR
       </v-btn>
     </div>
   </div>

@@ -193,6 +193,7 @@ import {
 import { useRouter } from '@core/utils'
 import { initialAbility } from '@/plugins/acl/config'
 import { getCurrentInstance } from '@vue/composition-api'
+import axios from "axios";
 
 export default {
   setup() {
@@ -207,7 +208,10 @@ export default {
 
       // Remove userData & Ability from localStorage
       localStorage.removeItem('userKey')
-      localStorage.removeItem('userAbility')
+      localStorage.removeItem('userAbility') 
+      localStorage.removeItem('userData') 
+      axios.defaults.headers.common["Authorization"] = `Bearer `;
+
 
       // Reset ability
       vm.$ability.update(initialAbility)

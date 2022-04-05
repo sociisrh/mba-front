@@ -173,7 +173,7 @@ import {
 } from "@mdi/js";
 import { ref, getCurrentInstance } from "@vue/composition-api";
 import { required, emailValidator } from "@core/utils/validation";
-import axios from "@axios";
+import axios from "axios";
 import { useRouter } from "@core/utils";
 import themeConfig from "@themeConfig";
 import store from "@/store";
@@ -229,6 +229,7 @@ export default {
           const dados = response.data.data
           if (dados.status) {
             const token = dados.access_token;
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
             localStorage.setItem("accessToken", token);
             auth_success.value = true;
             return response;
