@@ -6,5 +6,4 @@ import { initialAbility } from './config'
 // ? You can update this if you store user abilities to more secure place
 // ! Anyone can update localStorage so be careful and please update this
 const existingAbility = JSON.parse(localStorage.getItem('userAbility'))
-console.log(existingAbility)
 export default new Ability(existingAbility || initialAbility)

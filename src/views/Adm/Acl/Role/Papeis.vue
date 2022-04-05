@@ -318,9 +318,10 @@ export default {
       selectedRows,
       fetchRoles,
     } = useRolesList();
+
     const formTitle = computed(() => {
-      if (indexEdicao === false) return "papel";
-      if (indexEdicao === true) return "papel";
+      if (indexEdicao.value === false) return "papel";
+      if (indexEdicao.value === true) return "papel";
     });
     const permissions = computed(() => store.getters["app-roles/getPermissionsList"]);
     const likesAllRole = computed(() => selectedPermission.value.length === permissions.value.length)
@@ -338,7 +339,7 @@ export default {
     function edit(item) {
       this.itemData = item;
       this.indexEdicao = !this.indexEdicao;
-      selectedPermission.value = item.permissions;
+      selectedPermission.value = item.permissoes;
       role.value = item
       this.isAddPapel = !this.isAddPapel;
     }
@@ -350,6 +351,7 @@ export default {
     {
       store.dispatch("app-roles/removeRole", this.itemData.id ).then(() => {
         this.dialogRemove = false;
+        fetchRoles()  
         store.dispatch("module/openSnackBar", {
           color: "success",
           timeout: 10000,
@@ -364,9 +366,10 @@ export default {
     }
     function closeModal() {
       role.value = [];
-      selectedPermission.value = [];
+      selectedPermission.value = [];      
       store.commit("app-roles/setIndexEdicao", false);
-      isAddPapel = false;
+      isAddPapel.value = false;
+      indexEdicao.value = false;
     }    
 
     const validate = () => {
@@ -407,7 +410,8 @@ export default {
                 text: "Papel atualizado com sucesso com sucesso.",
               });
             });
-          }          
+          }  
+          fetchRoles()        
           closeModal();
         } else {
           validate();
