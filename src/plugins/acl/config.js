@@ -4,5 +4,4 @@ export const initialAbility = [
     subject: 'Public',
   },
 ]
-
 export const _ = undefined

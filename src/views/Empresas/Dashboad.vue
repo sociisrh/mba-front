@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-card class="mb-6">
-      <v-card-title>Seja bem vindo na área administrativa 🚀</v-card-title>
+    <v-card class="mb-6" v-if="$can('read', 'dashboad-empresa')">
+      <v-card-title>Seja bem vindo na área da empresa 🚀</v-card-title>
       <v-card-text>Sprint 1.</v-card-text>
       <v-card-text>
         Sistema em fase de construção.
@@ -19,8 +19,7 @@ export default {
   components: {
     
   },
-  setup(){
-    
+  setup() {    
     onMounted(() => {
       
     })

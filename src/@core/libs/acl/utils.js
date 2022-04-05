@@ -9,7 +9,7 @@ import { getCurrentInstance } from '@vue/composition-api'
  */
 export const can = (action, subject) => {
   const vm = getCurrentInstance().proxy
-
+  console.log(action, subject)
   return vm.$can ? vm.$can(action, subject) : true
 }
 
@@ -18,7 +18,11 @@ export const can = (action, subject) => {
  * Based on item's action and resource
  * @param {Object} item navigation object item
  */
-export const canViewVerticalNavMenuLink = item => can(item.action, item.resource)
+export const canViewVerticalNavMenuLink = item => {
+  console.log(can(item.action, item.resource))
+  return can(item.action, item.resource)
+
+}
 
 /**
  * Check if user can view item based on it's ability

@@ -35,6 +35,8 @@ export default [
     meta: {
       layout: "content",
       requiresAuth: true,
+      resource: 'dashboad-empresa',
+      action: 'view',
     },
   },
   {

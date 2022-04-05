@@ -43,64 +43,59 @@
 
         <!-- login form -->
         <v-card-text>
-          <v-text-field
-            v-model="email"
-            outlined
-            label="E-mail"
-            placeholder="john@example.com"
-            hide-details
-            class="mb-3"
-            id="email"
-            name="email"
-            type="email"
-            :hint="errors.first('email')"
-            :error="errors.collect('email').length ? true : false"
-            v-validate="{ required: true }"
-            data-vv-validate-on="change|blur|input"
-            data-vv-as="e-mail"
-            persistent-hint
-          ></v-text-field>
+          <v-form ref="loginForm" @submit.prevent="handleFormSubmit">
+            <v-text-field
+              v-model="email"
+              outlined
+              label="E-mail"
+              placeholder="john@example.com"
+              hide-details
+              class="mb-3"
+              id="email"
+              name="email"
+              type="email"
+              :error-messages="errorMessages.email"
+              :rules="[validators.required, validators.emailValidator]"
+              data-vv-as="e-mail"
+              persistent-hint
+            ></v-text-field>
 
-          <v-text-field
-            v-model="password"
-            outlined
-            :type="isPasswordVisible ? 'text' : 'password'"
-            label="Senha"
-            placeholder="············"
-            :append-icon="
-              isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline
-            "
-            hide-details
-            @click:append="isPasswordVisible = !isPasswordVisible"
-            id="password"
-            name="password"
-            :hint="errors.first('password')"
-            :error="errors.collect('password').length ? true : false"
-            v-validate="{ required: true }"
-            data-vv-validate-on="change|blur|input"
-            data-vv-as="password"
-            persistent-hint
-          ></v-text-field>
+            <v-text-field
+              v-model="password"
+              outlined
+              :type="isPasswordVisible ? 'text' : 'password'"
+              label="Senha"
+              :error-messages="errorMessages.password"
+              placeholder="Password"
+              :append-icon="
+                isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline
+              "
+              :rules="[validators.required]"
+              hide-details="auto"
+              class="mb-2"
+              @click:append="isPasswordVisible = !isPasswordVisible"
+            ></v-text-field>
 
-          <div class="d-flex align-center justify-space-between flex-wrap">
-            <v-checkbox hide-details label="Lembre se mim" class="mt-0">
-            </v-checkbox>
+            <div class="d-flex align-center justify-space-between flex-wrap">
+              <v-checkbox hide-details label="Lembre se mim" class="mt-0">
+              </v-checkbox>
 
-            <!-- forget link -->
-            <router-link :to="{ name: 'auth-forgot-password' }" class="ms-3">
-              Esqueceu a senha?
-            </router-link>
-          </div>
+              <!-- forget link -->
+              <router-link :to="{ name: 'auth-forgot-password' }" class="ms-3">
+                Esqueceu a senha?
+              </router-link>
+            </div>
 
-          <v-btn
-            block
-            color="primary"
-            type="submit"
-            class="mt-6"
-            @click="login()"
-          >
-            Login
-          </v-btn>
+            <v-btn
+              block
+              color="primary"
+              type="submit"
+              class="mt-6"
+              :loading="loadingBtnLogin"
+            >
+              Login
+            </v-btn>
+          </v-form>
         </v-card-text>
 
         <!-- create new account  -->
@@ -170,141 +165,145 @@
 // eslint-disable-next-line object-curly-newline
 import {
   mdiFacebook,
+  mdiTwitter,
   mdiGithub,
   mdiGoogle,
   mdiEyeOutline,
   mdiEyeOffOutline,
 } from "@mdi/js";
+import { ref, getCurrentInstance } from "@vue/composition-api";
+import { required, emailValidator } from "@core/utils/validation";
+import axios from "@axios";
+import { useRouter } from "@core/utils";
 import themeConfig from "@themeConfig";
 import store from "@/store";
 
 export default {
-  name: "Login",
-  components: {},
-  data: () => ({
-    socialLink: [
+  setup() {
+    // Template Ref
+    const loginForm = ref(null);
+
+    const vm = getCurrentInstance().proxy;
+    const { router } = useRouter();
+
+    const isPasswordVisible = ref(false);
+    const loadingBtnLogin = ref(false);
+    const email = ref("admin@materio.com");
+    const password = ref("admin");
+    const errorMessages = ref([]);
+    const socialLink = [
       {
         icon: mdiFacebook,
         color: "#4267b2",
         colorInDark: "#4267b2",
-        action: "facebook",
+      },
+      {
+        icon: mdiTwitter,
+        color: "#1da1f2",
+        colorInDark: "#1da1f2",
       },
       {
         icon: mdiGithub,
         color: "#272727",
         colorInDark: "#fff",
-        action: "github",
       },
       {
         icon: mdiGoogle,
         color: "#db4437",
         colorInDark: "#db4437",
-        action: "google",
       },
-    ],
-    icons: {
-      mdiEyeOutline,
-      mdiEyeOffOutline,
-    },
-    isPasswordVisible: false,
-    email: "",
-    password: "",
-    message: "",
-    isSnackbarVisible: false,
-    // themeConfig
-    appName: themeConfig.app.name,
-    appLogo: themeConfig.app.logo,
-  }),
-  computed: {
-    erroMessage: {
-      get() {
-        return store.getters["auth/getErrorMessage"];
-      },
-      set(value) {
-        store.dispatch("auth/setErrorMessage", value);
-      },
-    },
-  },
-  methods: {
-    async login() {
-      this.$validator.validateAll().then((result) => {
-        if (result === true) {
-          const data = {
-            email: email.value,
-            password: password.value,
-          };
-          store
-            .dispatch("auth/login", data)
-            .then((resp) => {
-              if (resp === true) {             
-                const userToken = localStorage.getItem("accessToken");
-                if (userToken !== undefined) {
-                  store.dispatch("auth/dadosUsuario");
-                } else {
-                  localStorage.removeItem("accessToken");
-                  localStorage.removeItem("user");
-                  this.$store.dispatch("module/openSnackBar", {
-                    color: "error",
-                    timeout: 10000,
-                    text: "Oops, E-mail e senha informados não foram encontrados na base dados.",
-                  });
-                }
-              }
-            })
-            .catch((erro) => {
-              this.$store.dispatch("module/openSnackBar", {
-                color: "error",
-                timeout: 10000,
-                text: "Oops, dados invalidos.",
-              });
-            });
-        } else {
-          this.$store.dispatch("module/openSnackBar", {
-            color: "error",
-            timeout: 10000,
-            text: "Oops, falta informações no formulário.",
-          });
-        }
-      });
-    },
-    async loginGithub() {
-      store.dispatch("auth/loginGithub").then((resp) => {
-        if (resp.data.data) {
-          window.location.href = resp.data.data;
-        }
-      });
-    },
-    validAction(item) {
-      switch (item) {
-        case "github":
-          this.loginGithub();
-          break;
-        case "facebook":
-          this.$store.dispatch("module/openSnackBar", {
-            color: "error",
-            timeout: 3000,
-            text: "Oops, tivemos um problema por aqui, tente com o GitHub, por favor.",
-          });
-          break;
-        case "google":
-          this.$store.dispatch("module/openSnackBar", {
-            color: "error",
-            timeout: 3000,
-            text: "Oops, tivemos um problema por aqui, tente com o GitHub, por favor.",
-          });
+    ];
 
-          break;
-      }
-    },
-  },
-  created() {
-    if (this.erroMessage !== "") {
-      this.$store.dispatch("module/openSnackBar", {
-        color: "error",
-        timeout: 10000,
-        text: this.erroMessage,
-      });
-    }
+    const handleFormSubmit = () => {
+      loadingBtnLogin.value = true;
+      const isFormValid = loginForm.value.validate();
+
+      if (!isFormValid) return;
+
+      store
+        .dispatch("auth/login", {
+          email: email.value,
+          password: password.value,
+        })
+        .then((response) => {
+          const token = response.data.data.access_token;
+          localStorage.setItem("accessToken", token);
+          return response;
+        })
+        .then(() => {
+          setTimeout(() => {
+            store.dispatch("auth/dadosUsuario").then((result) => {
+              if (result.data.data.user) {
+                const user = result.data.data.user;
+
+                const { ability: userAbility } = user;
+
+                // Set user ability
+                // ? https://casl.js.org/v5/en/guide/intro#update-rules
+                vm.$ability.update(userAbility);
+
+                // Set user's ability in localStorage for Access Control
+                localStorage.setItem(
+                  "userAbility",
+                  JSON.stringify(userAbility)
+                );
+
+                // We will store `userAbility` in localStorage separate from userData
+                // Hence, we are just removing it from user object
+                delete user.ability;
+
+                // Set user's data in localStorage for UI/Other purpose
+                localStorage.setItem("userData", JSON.stringify(user));
+                localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("role", user.role);
+
+                store.commit("auth/setUser", user);
+                store.commit("auth/setUsuario", user);
+                store.commit("auth/auth_status", "LOGADO");
+                store.commit("auth/setRole", user.role);
+                loadingBtnLogin.value = false;
+                
+                router.push("/");
+              }
+            });
+          }, 2000);
+        })
+        .catch((error) => {
+          // TODO: Next Update - Show notification
+          console.error("Oops, Unable to login!");
+          console.log("error :>> ", error.response);
+          errorMessages.value = error.response.data.error;
+        })
+        .finally(() => {
+          
+        });
+    };
+
+    return {
+      handleFormSubmit,
+
+      isPasswordVisible,
+      loadingBtnLogin,
+      email,
+      password,
+      errorMessages,
+      socialLink,
+      icons: {
+        mdiEyeOutline,
+        mdiEyeOffOutline,
+      },
+      validators: {
+        required,
+        emailValidator,
+      },
+
+      // themeConfig
+      appName: themeConfig.app.name,
+      appLogo: themeConfig.app.logo,
+
+      // Template Refs
+      loginForm,
+    };
   },
 };
 </script>

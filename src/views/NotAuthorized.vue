@@ -38,5 +38,5 @@
 </template>
 
 <style lang="scss">
-@import '@core/preset/preset/misc.scss';
+  @import '@core/preset/preset/misc.scss';
 </style>
