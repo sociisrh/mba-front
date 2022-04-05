@@ -4,17 +4,14 @@
       <v-card class="auth-card">
         <!-- logo and title -->
         <v-card-title class="d-flex align-center justify-center py-7">
-          <router-link
-            to="/"
-            class="d-flex align-center"
-          >
+          <router-link to="/" class="d-flex align-center">
             <v-img
               :src="appLogo"
               max-height="30px"
               max-width="30px"
               alt="logo"
               contain
-              class="me-3 "
+              class="me-3"
             ></v-img>
 
             <h2 class="text-2xl font-weight-semibold">
@@ -25,11 +22,23 @@
 
         <v-card-text>
           <p class="text-2xl font-weight-semibold text--primary mb-2">
-           Redefinir senha 🔒
+            Redefinir senha 🔒
           </p>
           <p class="mb-2">
             Sua nova senha deve ser diferente das senhas usadas anteriormente
           </p>
+        </v-card-text>
+
+        <v-card-text>
+          <v-alert text color="primary">
+            <h3>Acesso ao Mailtraip</h3>
+            <p>Para testar o processo de recuperação de senha acesse a plataforma do mailtrap com os dados abaixo.</p>
+            <small class="d-block mb-1">
+              Admin e-mail: <strong>jmatteus20@gmail.com</strong>
+               / Senha:
+              <strong>7Beik8xxvX@dX@S</strong>
+            </small>
+          </v-alert>
         </v-card-text>
 
         <!-- login form -->
@@ -41,7 +50,9 @@
               :type="isPasswordVisible ? 'text' : 'password'"
               label="Senha"
               placeholder="············"
-              :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
+              :append-icon="
+                isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline
+              "
               hide-details
               @click:append="isPasswordVisible = !isPasswordVisible"
               class="mb-3"
@@ -61,9 +72,15 @@
               :type="isConfirmPasswordVisible ? 'text' : 'password'"
               label="Confirme a senha"
               placeholder="············"
-              :append-icon="isConfirmPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
+              :append-icon="
+                isConfirmPasswordVisible
+                  ? icons.mdiEyeOffOutline
+                  : icons.mdiEyeOutline
+              "
               hide-details
-              @click:append="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+              @click:append="
+                isConfirmPasswordVisible = !isConfirmPasswordVisible
+              "
               class="mb-3"
               id="confirmPassword"
               name="confirmPassword"
@@ -75,12 +92,7 @@
               persistent-hint
             ></v-text-field>
 
-            <v-btn
-              block
-              color="primary"
-              class="mt-4"
-              @click="recuperSenha()"
-            >
+            <v-btn block color="primary" class="mt-4" @click="recuperSenha()">
               Definir nova senha
             </v-btn>
           </v-form>
@@ -89,13 +101,10 @@
         <!-- back to login -->
         <v-card-actions class="d-flex justify-center align-center">
           <router-link
-            :to="{name:'auth-login-v1'}"
+            :to="{ name: 'auth-login' }"
             class="d-flex align-center text-sm"
           >
-            <v-icon
-              size="24"
-              color="primary"
-            >
+            <v-icon size="24" color="primary">
               {{ icons.mdiChevronLeft }}
             </v-icon>
             <span>Volte ao login</span>
@@ -108,8 +117,12 @@
     <img
       class="auth-mask-bg"
       height="190"
-      :src="require(`@/assets/images/misc/mask-${$vuetify.theme.dark ? 'dark':'light'}.png`)"
-    >
+      :src="
+        require(`@/assets/images/misc/mask-${
+          $vuetify.theme.dark ? 'dark' : 'light'
+        }.png`)
+      "
+    />
 
     <!-- tree -->
     <v-img
@@ -131,9 +144,9 @@
 
 <script>
 // eslint-disable-next-line object-curly-newline
-import { mdiChevronLeft, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
-import store from '@/store'
-import themeConfig from '@themeConfig'
+import { mdiChevronLeft, mdiEyeOutline, mdiEyeOffOutline } from "@mdi/js";
+import store from "@/store";
+import themeConfig from "@themeConfig";
 
 export default {
   name: "ResetPassword",
@@ -142,65 +155,98 @@ export default {
     icons: { mdiChevronLeft, mdiEyeOutline, mdiEyeOffOutline },
     isPasswordVisible: false,
     isConfirmPasswordVisible: false,
-    password: '',
-    confirmPassword: '',
-    token: '',
+    password: "",
+    confirmPassword: "",
+    token: "",
     isSnackbarVisible: false,
     // themeConfig
     appName: themeConfig.app.name,
-    appLogo: themeConfig.app.logo
+    appLogo: themeConfig.app.logo,
   }),
   computed: {},
   methods: {
-    recuperSenha()
-    {
-      this.$validator.validateAll()
-      .then((result) => {
-        if(result === true)
-        {
+    recuperSenha() {
+      this.$validator.validateAll().then((result) => {
+        if (result === true) {
           if (password.value === confirmPassword.value) {
             const data = {
-              'password': password.value,
-              'password_confirmation': confirmPassword.value,
-              'token': this.token[1]
-            }
-            store.dispatch('auth/novaSenha', data)
-            .then(response => {
-              if (response.data.data.codigo == true) {
-                this.$store.dispatch('module/openSnackBar', { color: 'success', timeout: 10000, text: response.data.data.message })
+              password: password.value,
+              password_confirmation: confirmPassword.value,
+              token: this.token[1],
+            };
+            store
+              .dispatch("auth/novaSenha", data)
+              .then((response) => {
+                if (response == true) {
+                  this.$store.dispatch("module/openSnackBar", {
+                    color: "success",
+                    timeout: 10000,
+                    text: "Senha alterada com sucesso",
+                  });
+                  setTimeout(() => {
+                    this.$router.push({ name: "auth-login" });
+                  }, 1500);
+                } else {
+                  this.$store.dispatch("module/openSnackBar", {
+                    color: "error",
+                    timeout: 10000,
+                    text: "Oops, aconteceu um erro por aqui, tente novamente mais tarde.",
+                  });
+                  setTimeout(() => {
+                    this.$router.push({ name: "auth-login" });
+                  }, 1500);
+                }
+              })
+              .catch((erro) => {
+                this.$store.dispatch("module/openSnackBar", {
+                  color: "error",
+                  timeout: 10000,
+                  text: "Oops, dados invalidos.",
+                });
                 setTimeout(() => {
-                  this.$route.push("auth-login")
-                }, 3000);
-              }
-            })
-            .catch( erro => {
-              this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })
-            })
+                  this.$router.push({ name: "auth-login" });
+                }, 1500);
+              });
+          } else {
+            this.$store.dispatch("module/openSnackBar", {
+              color: "error",
+              timeout: 10000,
+              text: "Oops, dados invalidos.",
+            });
+            setTimeout(() => {
+              this.$router.push({ name: "auth-login" });
+            }, 1500);
           }
-          else {
-            this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })
-          }
+        } else {
+          this.$store.dispatch("module/openSnackBar", {
+            color: "error",
+            timeout: 10000,
+            text: "Oops, falta informações no formulário.",
+          });
         }
-        else {
-          this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, falta informações no formulário.' })
-        }
-      })
-    }
+      });
+    },
   },
   created() {
     const token = this.$route.params.token;
-    this.token = token.split('=')
-    store.dispatch('auth/validarToken', token)
-    .then(response => {
-      
-    })
-    .catch( erro => {
-      this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })
-    })
-  }
-}
+    this.token = token.split("=");
+    store
+      .dispatch("auth/validarToken", token)
+      .then()
+      .catch((erro) => {
+        this.$store.dispatch("module/openSnackBar", {
+          color: "error",
+          timeout: 10000,
+          text: "Oops, dados invalidos.",
+        });
+        setTimeout(() => {
+          this.$router.push({ name: "auth-login" });
+        }, 1500);
+      });
+  },
+};
 </script>
 
 <style lang="scss">
-@import '@core/preset/preset/pages/auth.scss';
+@import "@core/preset/preset/pages/auth.scss";
 </style>

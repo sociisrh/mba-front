@@ -52,20 +52,10 @@ async function loginUserCallback({ commit, dispatch }, payload) {
 
 async function recuperarSenha({ commit, dispatch }, data) {
   return new Promise((resolve, reject) => {
-    axios({
-      url: process.env.VUE_APP_BASE_URI_API_MANUTENCAO + "/forgotPassword",
-      data: data,
-      method: "POST",
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          resolve(true);
-        }
-        resolve(false);
-      })
-      .catch((erro) => {
-        reject(erro);
-      });
+    axios
+    .post(process.env.VUE_APP_BASE_URI_API_MANUTENCAO + "/forgotPassword", data)
+    .then(response => resolve(response))
+    .catch(error => reject(error))
   });
 }
 

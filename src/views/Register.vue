@@ -117,7 +117,7 @@
           <span class="me-2">
             Já tem uma conta?
           </span>
-          <router-link :to="{name:'auth-login-v1'}">
+          <router-link :to="{name:'auth-login'}">
             Faça login
           </router-link>
         </v-card-text>

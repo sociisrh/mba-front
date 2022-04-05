@@ -3,17 +3,14 @@
     <div class="auth-inner">
       <v-card class="auth-card">
         <v-card-title class="d-flex align-center justify-center py-7">
-          <router-link
-            to="/"
-            class="d-flex align-center"
-          >
+          <router-link to="/" class="d-flex align-center">
             <v-img
               :src="appLogo"
               max-height="30px"
               max-width="30px"
               alt="logo"
               contain
-              class="me-3 "
+              class="me-3"
             ></v-img>
 
             <h2 class="text-2xl font-weight-semibold">
@@ -24,7 +21,7 @@
 
         <v-card-text>
           <p class="text-2xl font-weight-semibold text--primary mb-2">
-           Esqueceu a senha? 🔒
+            Esqueceu a senha? 🔒
           </p>
           <p class="mb-2">
             Digite seu e-mail e enviaremos instruções para redefinir sua senha
@@ -52,11 +49,7 @@
               persistent-hint
             ></v-text-field>
 
-            <v-btn
-              block
-              color="primary"
-              @click="recuperSenha()"
-            >
+            <v-btn block color="primary" @click="recuperSenha()">
               Enviar link de redefinição
             </v-btn>
           </v-form>
@@ -64,13 +57,10 @@
 
         <v-card-actions class="d-flex justify-center align-center">
           <router-link
-            :to="{name:'auth-login-v1'}"
+            :to="{ name: 'auth-login' }"
             class="d-flex align-center text-sm"
           >
-            <v-icon
-              size="24"
-              color="primary"
-            >
+            <v-icon size="24" color="primary">
               {{ icons.mdiChevronLeft }}
             </v-icon>
             <span>Volte ao login</span>
@@ -83,7 +73,11 @@
     <img
       class="auth-mask-bg"
       height="190"
-      :src="require(`@/assets/images/misc/mask-${$vuetify.theme.dark ? 'dark':'light'}.png`)"
+      :src="
+        require(`@/assets/images/misc/mask-${
+          $vuetify.theme.dark ? 'dark' : 'light'
+        }.png`)
+      "
     />
 
     <!-- tree -->
@@ -105,55 +99,71 @@
 </template>
 
 <script>
-
-import { mdiChevronLeft, mdiEyeOffOutline } from '@mdi/js'
-import store from '@/store'
-import themeConfig from '@themeConfig'
+import { mdiChevronLeft, mdiEyeOffOutline } from "@mdi/js";
+import store from "@/store";
+import themeConfig from "@themeConfig";
 
 export default {
   name: "ForgotPassword",
   components: {},
   data: () => ({
     icons: {
-   
       mdiEyeOffOutline,
-      mdiChevronLeft  
+      mdiChevronLeft,
     },
-    email: '',
-    message: '',
+    email: "",
+    message: "",
     isSnackbarVisible: false,
     // themeConfig
     appName: themeConfig.app.name,
-    appLogo: themeConfig.app.logo
+    appLogo: themeConfig.app.logo,
   }),
   computed: {},
   methods: {
-    recuperSenha()
-    {
-      this.$validator.validateAll()
-      .then((result) => {
-        if(result === true)
-        {
+    recuperSenha() {
+      this.$validator.validateAll().then((result) => {
+        if (result === true) {
           const data = {
-            'email': email.value
-          }
-          store.dispatch('auth/recuperarSenha', data)
-          .then(response => {
-            
-          })
-          .catch( erro => {
-            this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, dados invalidos.' })
-          })
+            email: email.value,
+          };
+          store
+            .dispatch("auth/recuperarSenha", data)
+            .then((response) => {
+              if (response.data.data) {
+                this.$store.dispatch("module/openSnackBar", {
+                  color: "success",
+                  timeout: 10000,
+                  text: "E-mail de recuperação de senha enviado com sucesso!",
+                });
+                this.$router.push("/login");
+              } else {
+                this.$store.dispatch("module/openSnackBar", {
+                  color: "error",
+                  timeout: 10000,
+                  text: "Oops, aconteceu um erro por aqui, tente novamente mais tarde.",
+                });
+              }
+            })
+            .catch((erro) => {
+              this.$store.dispatch("module/openSnackBar", {
+                color: "error",
+                timeout: 10000,
+                text: "Oops, dados invalidos.",
+              });
+            });
+        } else {
+          this.$store.dispatch("module/openSnackBar", {
+            color: "error",
+            timeout: 10000,
+            text: "Oops, falta informações no formulário.",
+          });
         }
-        else {
-          this.$store.dispatch('module/openSnackBar', { color: 'error', timeout: 10000, text: 'Oops, falta informações no formulário.' })
-        }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss">
-@import '@core/preset/preset/pages/auth.scss';
+@import "@core/preset/preset/pages/auth.scss";
 </style>
