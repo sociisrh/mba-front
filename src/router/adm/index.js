@@ -42,7 +42,7 @@ export default [
   {
     path: "/menus",
     name: "acl-menus",
-    component: () => import("@/views/Adm/Menus.vue"),
+    component: () => import("@/views/Adm/Menu/Index.vue"),
     meta: {
       layout: "content",
       requiresAuth: true,
