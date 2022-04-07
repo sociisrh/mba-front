@@ -1,41 +1,41 @@
-import { mdiFileOutline, mdiHomeOutline, mdiLockOutline } from '@mdi/js'
+import { mdiFileOutline, mdiHomeOutline, mdiLockOutline, mdiCogOutline, mdiAccountMultiple, mdiOfficeBuildingOutline, mdiOfficeBuildingMarkerOutline, mdiNotebookMultiple } from '@mdi/js'
 
 export default [
   {
     title: 'Home',
     icon: mdiHomeOutline,
-    to: 'dashboad-empresa',
+    to: '/empresa/dashboad',
     resource: 'dashboad-empresa',
     action: 'read',
   },
   {
     title: 'Dashboad',
     icon: mdiHomeOutline,
-    to: 'dashboard',
+    to: '/adm/dashboad-adm',
     resource: 'Dashboard-adm',
     action: 'view',
   },
   {
     title: 'Configurações',
-    icon: mdiLockOutline,
+    icon: mdiCogOutline,
     resource: 'configuracao',
     action: 'view',
     children: [
       {
         title: 'Papeis',
-        to: 'acl-papeis',
+        to: '/adm/configuracao/acl/papeis',
         resource: 'roles',
         action: 'view',
       },
       {
         title: 'Permissões',
-        to: 'acl-permissoes',
+        to: '/adm/configuracao/acl/permissoes',
         resource: 'permission',
         action: 'view',
       },
       {
         title: 'Menus',
-        to: 'acl-menus',
+        to: '/adm/configuracao/menus',
         resource: 'menu',
         action: 'view'
       },
@@ -43,28 +43,28 @@ export default [
   },
   {
     title: 'Usuários',
-    icon: mdiFileOutline,
-    to: 'usuarios',
+    icon: mdiAccountMultiple,
+    to: '/adm/usuarios',
     resource: 'usuarios',
     action: 'view'
   },
   {
     title: 'Empresas',
-    icon: mdiFileOutline,
-    to: 'empresas',
+    icon: mdiOfficeBuildingOutline,
+    to: '/adm/empresas',
     resource: 'empresas',
     action: 'view'
   },
   {
     title: 'Empreendimentos',
-    icon: mdiFileOutline,
-    to: 'empreendimentos',
+    icon: mdiOfficeBuildingMarkerOutline,
+    to: '/adm/empreendimentos',
     resource: 'empreendimentos',
     action: 'view'
   },
   {
     title: 'Planos de manutenções',
-    icon: mdiLockOutline,
+    icon: mdiNotebookMultiple,
     resource: 'planos',
     action: 'view',
     children: [

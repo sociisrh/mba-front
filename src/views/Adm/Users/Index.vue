@@ -2,14 +2,14 @@
   <div>
     <!-- app drawer -->
     <v-card>
-      <v-card-title> Gestão de papeis </v-card-title>
+      <v-card-title> Gestão de usuários </v-card-title>
       <v-divider class="mt-4"></v-divider>
 
       <!-- actions -->
       <v-card-text class="d-flex align-center flex-wrap pb-0">
         <!-- search -->
         <v-text-field
-          v-model="searchQuery"
+          v-model="search"
           placeholder="Pesquisar"
           outlined
           hide-details
@@ -19,11 +19,11 @@
         </v-text-field>
 
         <v-spacer></v-spacer>
-
+        <!-- Opções -->
         <div class="d-flex align-center flex-wrap">
           <v-btn color="primary" class="mb-4 me-3" @click.stop="insert()">
             <v-icon>{{ icons.mdiPlus }}</v-icon>
-            <span>Novo papel</span>
+            <span>Novo menu</span>
           </v-btn>
 
           <v-menu bottom left>
@@ -67,11 +67,10 @@
 
       <!-- table -->
       <v-data-table
-        v-model="selectedRows"
         :headers="tableColumns"
-        :items="rolesListTable"
-        :server-items-length="totalRoleListTable"
+        :items="itemsListTable"
         :loading="loading"
+        :search="search"
         show-select
       >
         <!-- created_at -->
@@ -92,14 +91,14 @@
             </template>
 
             <v-list>
-              <v-list-item @click="show(item)">
+              <!-- <v-list-item @click="show(item)">
                 <v-list-item-title>
                   <v-icon size="20" class="me-2">
                     {{ icons.mdiEyeOutline }}
                   </v-icon>
                   <span>visualizar</span>
                 </v-list-item-title>
-              </v-list-item>
+              </v-list-item> -->
 
               <v-list-item @click.stop="edit(item)">
                 <v-list-item-title>
@@ -123,19 +122,22 @@
         </template>
       </v-data-table>
     </v-card>
+
+    <!-- Modal lateral -->
     <v-navigation-drawer
-      :value="isAddPapel"
+      :value="isAddItem"
       temporary
       touchless
       :right="!$vuetify.rtl"
       :width="$vuetify.breakpoint.smAndUp ? 350 : '100%'"
       app
-
     >
       <v-card height="100%">
         <div class="drawer-header d-flex align-center mb-4">
           <span class="font-weight-semibold text-base text--primary"
-            >{{ !indexEdicao ? `Cadastrar ${formTitle}` : `Editar ${formTitle}` }}
+            >{{
+              !indexEdicao ? `Cadastrar ${formTitle}` : `Editar ${formTitle}`
+            }}
           </span>
           <v-spacer></v-spacer>
           <v-btn icon small @click="closeModal()">
@@ -144,13 +146,12 @@
             </v-icon>
           </v-btn>
         </div>
-
-        <v-card-text>
-          <v-form ref="form" v-model="valid" @submit.prevent="onSubmit">
+        <v-form ref="form" v-model="valid" @submit.prevent="onSubmit">
+          <v-card-text>
             <div class="row">
               <div class="col-12">
                 <v-text-field
-                  v-model="role.name"
+                  v-model="item.title"
                   :rules="[validators.required]"
                   outlined
                   dense
@@ -161,101 +162,115 @@
                 ></v-text-field>
               </div>
               <div class="col-12">
-                <v-autocomplete
-                  v-model="selectedPermission"
+                <v-text-field
+                  v-model="item.icon"
                   :rules="[validators.required]"
-                  :items="permissions"
-                  item-text="name"
-                  item-value="name"
-                  label="Permissões"
                   outlined
+                  dense
+                  label="Icone"
                   hide-details="auto"
                   class=""
-                  data-vv-as="Permissões"
-                  multiple
-                  chips
-                  small-chips
-                >
-                  <template v-slot:selection="{ item, index }">
-                    <v-chip v-if="index === 0">
-                      <span>{{ item.name }}</span>
-                    </v-chip>
-                    <span v-if="index === 1" class="grey--text caption"
-                      >(+{{
-                        selectedPermission && selectedPermission.length - 1
-                      }}
-                      outros)</span
-                    >
-                  </template>
-                  <template #prepend-item>
-                    <v-list-item ripple @click="toggle">
-                      <v-list-item-action>
-                        <v-icon
-                          :color="
-                            selectedPermission.length > 0 ? 'primary' : ''"
-                        >
-                          {{ icon }}
-                        </v-icon>
-                      </v-list-item-action>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          Selecionar todos
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider class="mt-2"></v-divider>
-                  </template>
-                </v-autocomplete>
+                  data-vv-as="Icone"
+                ></v-text-field>
               </div>
-              <div class="col-6">
-                <v-btn color="primary" class="me-3" type="submit">
-                  Adicionar
-                </v-btn>
-              </div>
-              <div class="col-6">
-                <v-btn
-                  color="secondary"
+              <div class="col-12">
+                <v-text-field
+                  v-model="item.to"
+                  :rules="[validators.required]"
                   outlined
-                  type="reset"
-                  @click="closeModal()"
+                  dense
+                  label="Rota"
+                  hide-details="auto"
+                  class=""
+                  data-vv-as="Rota"
+                ></v-text-field>
+              </div>
+              <div class="col-12">
+                <v-select
+                  v-model="item.id_permission"
+                  :items="permissions"
+                  item-text="name"
+                  item-value="id"
+                  label="Permissão"
+                  outlined
+                  hide-details="auto"
+                  dense       
+                  id="id_permission"
+                  name="id_permission"  
+                  requiredrequired       
                 >
-                  Fechar
-                </v-btn>
+                </v-select>
+                
+              </div>              
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-8">
+                    <v-autocomplete
+                      v-model="item.menu_id"
+                      :items="itemsListTable"
+                      item-text="title"
+                      item-value="id"
+                      label="Menu pai"
+                      outlined
+                      hide-details="auto"
+                      class=""
+                      data-vv-as="Menu pai"
+                      dense
+                    >
+                    </v-autocomplete>
+                  </div>
+                  <div class="col-4">
+                    <v-text-field
+                      v-model="item.ordem"
+                      outlined
+                      dense
+                      label="Ordem"
+                      hide-details="auto"
+                      type="number"
+                      class=""
+                      data-vv-as="Ordem"
+                    ></v-text-field>
+                  </div>
+                </div>
               </div>
             </div>
-          </v-form>
-        </v-card-text>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" class="me-3" type="submit">
+              Adicionar
+            </v-btn>
+            <v-btn
+              color="secondary"
+              outlined
+              type="reset"
+              @click="closeModal()"
+            >
+              Fechar
+            </v-btn>
+          </v-card-actions>
+        </v-form>
       </v-card>
     </v-navigation-drawer>
+    <!-- Modal central -->
     <v-row justify="center">
-    <v-dialog
-      v-model="dialogRemove"
-      persistent
-      max-width="290"
-    >
-      <v-card>
-        <v-card-title class="text-h5">
-          Deseja realmente remover este item ?
-        </v-card-title>
-        <v-card-text>Todas informações serão removidas da base de dados.</v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="secondary"            
-            @click="closeModalRemover()"
+      <v-dialog v-model="dialogRemove" persistent max-width="290">
+        <v-card>
+          <v-card-title class="text-h5">
+            Deseja realmente remover este item ?
+          </v-card-title>
+          <v-card-text
+            >Todas informações serão removidas da base de dados.</v-card-text
           >
-            Fechar
-          </v-btn>
-          <v-btn
-            color="error"
-            @click="removerItem()"
-          >
-            Apagar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="secondary" @click="closeModalRemover()">
+              Fechar
+            </v-btn>
+            <v-btn color="error" @click="removerItem()"> Apagar </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </div>
 </template>
 
@@ -273,161 +288,153 @@ import {
   mdiEyeOutline,
   mdiFilePdfBox,
   mdiFileExcel,
-  mdiClose, mdiCloseBoxOutline, mdiMinusBoxOutline, mdiCheckboxBlankOutline, mdiFoodAppleOutline 
+  mdiClose,
+  mdiCloseBoxOutline,
+  mdiMinusBoxOutline,
+  mdiCheckboxBlankOutline,
+  mdiFoodAppleOutline,
 } from "@mdi/js";
-import { onUnmounted, ref, reactive, computed, nextTick, watch, onUpdated } from "@vue/composition-api";
-import roleStoreModule from "./roleStoreModule";
-import useRolesList from "./useRolesList";
+import {
+  onUnmounted,
+  ref,
+  reactive,
+  computed,
+  nextTick,
+  watch,
+  onUpdated,
+} from "@vue/composition-api";
+import storeModule from "./storeModule";
+import useUsuariosList from "./useUsuariosList";
 import { required } from "@core/utils/validation";
 
 export default {
-  name: "Gestao-papeis",
-  components: {
-    
-  },
+  name: "Gestao-usuarios",
   setup() {
-    const ROLE_APP_STORE_MODULE_NAME = "app-roles";
+    const USUARIOS_APP_STORE_MODULE_NAME = "app-usuarios";
     // Register module
-    if (!store.hasModule(ROLE_APP_STORE_MODULE_NAME))
-      store.registerModule(ROLE_APP_STORE_MODULE_NAME, roleStoreModule);
+    if (!store.hasModule(USUARIOS_APP_STORE_MODULE_NAME))
+      store.registerModule(USUARIOS_APP_STORE_MODULE_NAME, storeModule);
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(ROLE_APP_STORE_MODULE_NAME))
-        store.unregisterModule(ROLE_APP_STORE_MODULE_NAME);
+      if (store.hasModule(USUARIOS_APP_STORE_MODULE_NAME))
+        store.unregisterModule(USUARIOS_APP_STORE_MODULE_NAME);
     });
+    const permissions = computed(
+      () => store.getters["app-usuarios/getPermissionsList"]
+    );
     const indexEdicao = ref(false);
     const itemData = reactive({});
     const valid = ref(false);
     const form = ref(null);
-    const role = ref({
-      name: ''
+    const search = ref("");
+    const item = ref({
+      title: "",
+      id_permission: 0,
+      to: "",
+      ordem: "",
+      menu_id: "",
+      icon: ""
     });
-    
-    const dialogRemove = ref(false)
-    const selectedPermission = ref([]);
-    const isAddPapel = ref(false);
+
+    const dialogRemove = ref(false);
+
+    const isAddItem = ref(false);
     const {
-      rolesListTable,
+      itemsListTable,
       tableColumns,
-      searchQuery,
-      totalRoleListTable,
+      totalItemsListTable,
       loading,
       options,
-      roleTotalLocal,
       selectedRows,
-      fetchRoles,
-    } = useRolesList();
+      fetchItems,
+    } = useUsuariosList();
     const formTitle = computed(() => {
-      if (indexEdicao === false) return "papel";
-      if (indexEdicao === true) return "papel";
+      if (indexEdicao.value === false) return "menu";
+      if (indexEdicao.value === true) return "menu";
     });
-    const permissions = computed(() => store.getters["app-roles/getPermissionsList"]);
-    const likesAllRole = computed(() => selectedPermission.value.length === permissions.value.length)
-    const likesSomeRole = computed(() => selectedPermission.value.length > 0 && !likesAllRole.value)
-    const icon = computed(() => {
-      if (likesAllRole.value) return mdiCloseBoxOutline
-      if (likesSomeRole.value) return mdiMinusBoxOutline
-      return mdiCheckboxBlankOutline
-    });    
 
     function insert() {
       this.indexEdicao = false;
-      this.isAddPapel = !this.isAddPapel;
+      this.isAddItem = !this.isAddItem;
     }
     function edit(item) {
       this.itemData = item;
       this.indexEdicao = !this.indexEdicao;
-      selectedPermission.value = item.permissions;
-      role.value = item
-      this.isAddPapel = !this.isAddPapel;
+      this.item = item;
+      this.isAddItem = !this.isAddItem;
     }
     function remover(item) {
       this.itemData = item;
       this.dialogRemove = true;
     }
-    function removerItem()
-    {
-      store.dispatch("app-roles/removeRole", this.itemData.id ).then(() => {
+    function removerItem() {
+      store.dispatch("app-usuarios/removeItem", this.itemData.id).then(() => {
         this.dialogRemove = false;
+        fetchItems();
         store.dispatch("module/openSnackBar", {
           color: "success",
           timeout: 10000,
-          text: "Papel removido com sucesso."
+          text: "Item removido com sucesso.",
         });
       });
     }
-    function closeModalRemover()
-    {
+    function closeModalRemover() {
       this.itemData = [];
       this.dialogRemove = false;
     }
     function closeModal() {
-      role.value = [];
-      selectedPermission.value = [];
-      store.commit("app-roles/setIndexEdicao", false);
-      isAddPapel = false;
-    }    
-
+      item.value = [];
+      store.commit("app-usuarios/setIndexEdicao", false);
+      isAddItem.value = false;
+    }
     const validate = () => {
       form.value.validate();
     };
-    
-    const toggle = () => {
-      nextTick(() => { 
-        if(likesAllRole.value === true) 
-        {
-            selectedPermission.value = []
-        } else {
-            selectedPermission.value = permissions.value.map(t => t.name);
-        }
-      })
-    }
-
     const onSubmit = () => {
-        if (valid.value) { 
-          const data = {
-              name: role.value.name,
-              permissions: selectedPermission.value
-            }
-
-          if (!indexEdicao.value) {
-            store.dispatch("app-roles/addRole", data).then(() => {
-              store.dispatch("module/openSnackBar", {
-                color: "success",
-                timeout: 10000,
-                text: "Papel salvo com sucesso.",
-              });
+      if (valid.value) {
+        if (!indexEdicao.value) {
+          store.dispatch("app-usuarios/addItem", item.value).then(() => {
+            store.dispatch("module/openSnackBar", {
+              color: "success",
+              timeout: 10000,
+              text: "Item salvo com sucesso.",
             });
-          } else {
-            store.dispatch("app-roles/editRole",{ id:role.value.id, dados: data}).then(() => {
-              store.dispatch("module/openSnackBar", {
-                color: "success",
-                timeout: 10000,
-                text: "Papel atualizado com sucesso com sucesso.",
-              });
-            });
-          }          
-          closeModal();
+            fetchItems();
+          });          
         } else {
-          validate();
-        }
+          store
+            .dispatch("app-usuarios/editItem", {
+              id: item.value.id,
+              dados: item.value,
+            })
+            .then(() => {
+              store.dispatch("module/openSnackBar", {
+                color: "success",
+                timeout: 10000,
+                text: "Item atualizado com sucesso.",
+              });
+            });
+        }        
+        closeModal();
+      } else {
+        validate();
+      }
     };
-
     return {
-      rolesListTable,
+      itemsListTable,
       tableColumns,
-      searchQuery,
-      totalRoleListTable,
-      roleTotalLocal,
+      permissions,
+      search,
+      totalItemsListTable,
       loading,
       options,
-      isAddPapel,
+      isAddItem,
       selectedRows,
       formTitle,
       itemData,
       indexEdicao,
-      fetchRoles,
+      fetchItems,
       edit,
       insert,
       remover,
@@ -439,17 +446,13 @@ export default {
       form,
       onSubmit,
       dialogRemove,
-      role,
+      item,
       valid,
       validate,
       indexEdicao,
-      selectedPermission,
-      permissions,
-      likesAllRole,
-      likesSomeRole,
-      toggle,
+
       validators: { required },
-      icon, 
+
       icons: {
         mdiSquareEditOutline,
         mdiFileDocumentOutline,
@@ -466,7 +469,7 @@ export default {
         mdiCloseBoxOutline,
         mdiMinusBoxOutline,
         mdiCheckboxBlankOutline,
-        mdiFoodAppleOutline
+        mdiFoodAppleOutline,
       },
     };
   },

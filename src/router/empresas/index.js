@@ -3,7 +3,7 @@ export default [
 
   {
     path: "/empresa/dashboad",
-    name: "dashboad-empresa",
+    name: "/empresa/dashboad",
     component: () => import("@/views/Empresas/Dashboad.vue"),
     meta: {
       layout: "content",

@@ -3,61 +3,64 @@ import axios from "@axios";
 export default {
   namespaced: true,
   state: {
-    roleList: [],
-    permissionsList: [],
+    itemsList: [],
+    menuList: [],
     item: [], 
     indexEdicao: false,
+    permissionsList: []
    },
   getters: {
-    getRoleList: state => state.roleList,
+    getItemsList: state => state.itemsList,
+    getMenuList: state => state.menuList,
     getPermissionsList: state => state.permissionsList,
     getItem: state => state.item,
     getIndexEdicao: state => state.indexEdicao
 
   },
   mutations: {
-    setRoleList: (state, value) => { state.roleList = value },
+    setItemList: (state, value) => { state.itemsList = value },
+    setMenuList: (state, value) => { state.menuList = value },
     setPermissionsList: (state, value) => { state.permissionsList = value },
     setItem: (state, value) => { state.item = value },
-    setIndexEdicao: (state, value) => { state.indexEdicao = value },
+    setIndexEdicao: (state, value) => { state.indexEdicao = value },    
   },
   actions: {
-    fetchRoles(ctx) {
+    fetchItems(ctx) {
       return new Promise((resolve, reject) => {
         axios
-          .get('/v1/acl/role')
+          .get('/v1/menu/initialize')
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    fetchRole(ctx, { id }) {
+    fetchItem(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/v1/acl/role/${id}`)
+          .get(`/v1/menu/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    addRole(ctx, dados) {
+    addItem(ctx, dados) {
       return new Promise((resolve, reject) => {
         axios
-          .post('/v1/acl/role', dados )
+          .post('/v1/menu', dados )
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    editRole(ctx, {id, dados}) {
+    editItem(ctx, {id, dados}) {
       return new Promise((resolve, reject) => {
         axios
-          .put(`/v1/acl/role/${id}`, dados)
+          .put(`/v1/menu/${id}`, dados)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    removeRole(ctx, id ) {
+    removeItem(ctx, id ) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`/v1/acl/role/${id}`)
+          .delete(`/v1/menu/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

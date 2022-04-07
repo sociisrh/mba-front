@@ -24,7 +24,7 @@ export default [
   },
   {
     path: '/home',
-    name: 'home',
+    name: '/home',
     component: () => import('@/views/Home.vue'),
     meta: {
       layout: 'content',

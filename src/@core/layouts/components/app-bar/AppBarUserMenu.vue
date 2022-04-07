@@ -80,7 +80,7 @@
       <v-divider></v-divider>
 
       <!-- Profile -->
-      <v-list-item :to="{ name: 'apps-user-view', params: { id: 21 } }">
+      <v-list-item>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
             {{ icons.mdiAccountOutline }}

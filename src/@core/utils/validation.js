@@ -13,7 +13,7 @@ export const emailValidator = value => {
     return value.every(val => re.test(String(val)))
   }
 
-  return re.test(String(value)) || 'The Email field must be a valid email'
+  return re.test(String(value)) || 'O campo Email deve ser um email válido'
 }
 
 export const passwordValidator = password => {
@@ -85,7 +85,7 @@ export const urlValidator = value => {
   /* eslint-disable no-useless-escape */
   const re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/
 
-  return re.test(value) || 'URL is invalid'
+  return re.test(value) || 'O URL é inválido'
 }
 
 export const lengthValidator = (value, length) => {

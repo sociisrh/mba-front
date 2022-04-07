@@ -14,8 +14,8 @@ const routes = [
       const userToken = localStorage.getItem('accessToken')
       const userRole = (JSON.parse(userData) && userToken && localStorage.getItem('role') ) ? localStorage.getItem('role') : null 
 
-      if (userRole === 'Administrador') return { name: 'dashboad' }
-      if (userRole === 'Construtora') return { name: 'dashboad-empresa' }          
+      if (userRole === 'Administrador') return { name: '/adm/dashboad-adm' }
+      if (userRole === 'Construtora') return { name: '/empresa/dashboad' }          
       
       return { name: 'auth-login', query: to.query }
               

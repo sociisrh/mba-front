@@ -2,8 +2,8 @@ import store from "@/store";
 export default [
 
   {
-    path: "/dashboad",
-    name: "dashboad",
+    path: "/adm/dashboad-adm",
+    name: "/adm/dashboad-adm",
     component: () => import("@/views/Adm/Dashboad.vue"),
     meta: {
       layout: "content",
@@ -11,17 +11,17 @@ export default [
     },
   },
   {
-    path: "/usuarios",
-    name: "usuarios",
-    component: () => import("@/views/Adm/Users/Users.vue"),
+    path: "/adm/usuarios",
+    name: "/adm/usuarios",
+    component: () => import("@/views/Adm/Users/Index.vue"),
     meta: {
       layout: "content",
       requiresAuth: true,
     },
   },
   {
-    path: "/papeis",
-    name: "acl-papeis",
+    path: "/adm/configuracao/acl/papeis",
+    name: "/adm/configuracao/acl/papeis",
     component: () => import("@/views/Adm/Acl/Role/Papeis.vue"),
     meta: {
       layout: "content",
@@ -29,8 +29,8 @@ export default [
     },
   },
   {
-    path: "/permissoes",
-    name: "acl-permissoes",
+    path: "/adm/configuracao/acl/permissoes",
+    name: "/adm/configuracao/acl/permissoes",
     component: () => import("@/views/Adm/Acl/Permissions/Permissions.vue"),
     meta: {
       layout: "content",
@@ -40,8 +40,26 @@ export default [
     },
   },
   {
-    path: "/menus",
-    name: "acl-menus",
+    path: "/adm/configuracao/menus",
+    name: "/adm/configuracao/menus",
+    component: () => import("@/views/Adm/Menu/Index.vue"),
+    meta: {
+      layout: "content",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/adm/empresas",
+    name: "/adm/empresas",
+    component: () => import("@/views/Adm/Empresas/Index.vue"),
+    meta: {
+      layout: "content",
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/adm/empreendimentos",
+    name: "/adm/empreendimentos",
     component: () => import("@/views/Adm/Menu/Index.vue"),
     meta: {
       layout: "content",
