@@ -60,7 +60,7 @@ export default [
   {
     path: "/adm/empreendimentos",
     name: "/adm/empreendimentos",
-    component: () => import("@/views/Adm/Menu/Index.vue"),
+    component: () => import("@/views/Adm/Empreendimentos/Index.vue"),
     meta: {
       layout: "content",
       requiresAuth: true,

@@ -2,7 +2,7 @@
   <div>
     <!-- app drawer -->
     <v-card>
-      <v-card-title> Gestão de menu </v-card-title>
+      <v-card-title> Gestão de empreendimentos </v-card-title>
       <v-divider class="mt-4"></v-divider>
 
       <!-- actions -->
@@ -23,7 +23,7 @@
         <div class="d-flex align-center flex-wrap">
           <v-btn color="primary" class="mb-4 me-3" @click.stop="insert()">
             <v-icon>{{ icons.mdiPlus }}</v-icon>
-            <span>Novo menu</span>
+            <span>Novo empreendimento</span>
           </v-btn>
 
           <v-menu bottom left>
@@ -73,6 +73,58 @@
         :search="search"
         show-select
       >
+        <!-- name -->
+        <template #[`item.name`]="{item}">
+          <div class="d-flex align-center">
+            <v-avatar
+              :color="item.logo ? '' : 'primary'"
+              :class="item.logo ? '' : 'v-avatar-light-bg primary--text'"
+              size="32"
+            >
+              <v-img
+                v-if="item.logo"
+                :src="item.logo"
+              ></v-img>
+              <span
+                v-else
+              >{{ item.name.slice(0,2).toUpperCase() }}</span>
+            </v-avatar>
+
+            <div class="d-flex flex-column ms-3">
+              <span
+               
+                class="text--primary font-weight-semibold text-truncate cursor-pointer text-decoration-none"
+              >
+                {{ item.name }}
+              </span>
+              <small>@{{ item.slug }}</small>
+            </div>
+          </div>
+        </template>
+        <!-- contato -->
+        <template #[`item.fone`]="{item}">
+          <div class="d-flex align-center">
+            <div class="d-flex flex-column ms-3">
+              <span
+                class="text--primary font-weight-semibold text-truncate cursor-pointer text-decoration-none"
+              >
+                {{ item.fone }}
+              </span>
+              <small>{{ item.cell }}</small>
+            </div>
+          </div>
+        </template>
+        <!-- status -->
+        <template #[`item.status`]="{item}">
+          <v-chip
+            small
+            :color="resolveStatusVariant(item.status)"
+            :class="`${resolveStatusVariant(item.status)}--text`"
+            class="v-chip-light-bg font-weight-semibold text-capitalize"
+          >
+            {{ resolveNameStatusVariant(item.status) }}
+          </v-chip>
+        </template>
         <!-- created_at -->
         <template #[`item.created_at`]="{ item }">
           <span>{{ item.created_at | dateTimeFormatBr() }}</span>
@@ -84,13 +136,13 @@
         <!-- actions -->
         <template #[`item.actions`]="{ item }">
           <v-menu bottom left>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+            <template v-slot:activator="{ on, attrs }" >
+              <v-btn icon v-bind="attrs" v-on="on" v-show="item.id != 1">
                 <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
               </v-btn>
             </template>
 
-            <v-list>
+            <v-list v-show="item.id != 1">
               <!-- <v-list-item @click="show(item)">
                 <v-list-item-title>
                   <v-icon size="20" class="me-2">
@@ -151,11 +203,11 @@
             <div class="row">
               <div class="col-12">
                 <v-text-field
-                  v-model="item.title"
+                  v-model="item.name"
                   :rules="[validators.required]"
                   outlined
                   dense
-                  label="Nome"
+                  label="Nome do empreendimento"
                   hide-details="auto"
                   class=""
                   data-vv-as="Nome"
@@ -163,76 +215,87 @@
               </div>
               <div class="col-12">
                 <v-text-field
-                  v-model="item.icon"
+                  v-model="item.slug"
                   :rules="[validators.required]"
                   outlined
                   dense
-                  label="Icone"
+                  label="Slug de acesso"
                   hide-details="auto"
                   class=""
-                  data-vv-as="Icone"
+                  data-vv-as="Slug de acesso"
                 ></v-text-field>
               </div>
               <div class="col-12">
                 <v-text-field
-                  v-model="item.to"
+                  v-model="item.endereco"
                   :rules="[validators.required]"
                   outlined
                   dense
-                  label="Rota"
+                  label="Endereço"
                   hide-details="auto"
                   class=""
-                  data-vv-as="Rota"
+                  data-vv-as="Endereço"
+                ></v-text-field>
+              </div>
+              <div class="col-12">
+                <v-text-field
+                  v-model="item.fone"
+                  :rules="[validators.required]"
+                  outlined
+                  dense
+                  label="Telefone de contato"
+                  hide-details="auto"
+                  class=""
+                  type="tel"
+                  data-vv-as="Telefone de contato"
                 ></v-text-field>
               </div>
               <div class="col-12">
                 <v-select
-                  v-model="item.id_permission"
-                  :items="permissions"
+                  v-model="item.status"
+                  :rules="[validators.required]"
+                  :items="['A', 'I']"
+                  outlined
+                  dense
+                  label="Status"
+                  hide-details="auto"
+                  class=""
+                  data-vv-as="Status"
+                ></v-select>
+              </div>
+              <div class="col-12">
+                <v-select
+                  v-model="item.id_empresa"
+                  :rules="[resolvedRequired]"
+                  :items="empresasList"
+                  outlined
+                  dense
                   item-text="name"
                   item-value="id"
-                  label="Permissão"
-                  outlined
+                  label="Empresa responsavel"
                   hide-details="auto"
-                  dense       
-                  id="id_permission"
-                  name="id_permission"  
-                  requiredrequired       
-                >
-                </v-select>
-                
-              </div>              
+                  class=""
+                  data-vv-as="Empresa responsavel"
+                ></v-select>
+              </div>     
               <div class="col-12">
-                <div class="row">
-                  <div class="col-8">
-                    <v-autocomplete
-                      v-model="item.menu_id"
-                      :items="itemsListTable"
-                      item-text="title"
-                      item-value="id"
-                      label="Menu pai"
-                      outlined
-                      hide-details="auto"
-                      class=""
-                      data-vv-as="Menu pai"
-                      dense
-                    >
-                    </v-autocomplete>
-                  </div>
-                  <div class="col-4">
-                    <v-text-field
-                      v-model="item.ordem"
-                      outlined
-                      dense
-                      label="Ordem"
-                      hide-details="auto"
-                      type="number"
-                      class=""
-                      data-vv-as="Ordem"
-                    ></v-text-field>
-                  </div>
-                </div>
-              </div>
+                 <v-file-input
+                  v-model="item.logo"
+                  label="Logotipo"
+                  accept=".png, .jpg, .jpeg"
+                  outlined
+                  dense
+                ></v-file-input>
+              </div>            
+              <div class="col-12">
+                <v-textarea
+                  v-model="item.description"
+                  outlined
+                  dense
+                  name="input-7-4"
+                  label="Sobre da empreendimento"
+                ></v-textarea>
+              </div> 
             </div>
           </v-card-text>
           <v-card-actions>
@@ -304,37 +367,38 @@ import {
   onUpdated,
 } from "@vue/composition-api";
 import storeModule from "./storeModule";
-import useMenuList from "./useMenuList";
-import { required } from "@core/utils/validation";
+import useEmpreendimentoList from "./useEmpreendimentoList";
+import { required, urlValidator, emailValidator } from "@core/utils/validation";
 
 export default {
-  name: "Gestao-usuarios",
+  name: "Gestao-empreendimentos",
   setup() {
-    const USUARIOS_APP_STORE_MODULE_NAME = "app-usuarios";
+    const EMPREENDIMENTO_APP_STORE_MODULE_NAME = "app-empreendimentos";
     // Register module
-    if (!store.hasModule(USUARIOS_APP_STORE_MODULE_NAME))
-      store.registerModule(USUARIOS_APP_STORE_MODULE_NAME, storeModule);
+    if (!store.hasModule(EMPREENDIMENTO_APP_STORE_MODULE_NAME))
+      store.registerModule(EMPREENDIMENTO_APP_STORE_MODULE_NAME, storeModule);
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(USUARIOS_APP_STORE_MODULE_NAME))
-        store.unregisterModule(USUARIOS_APP_STORE_MODULE_NAME);
+      if (store.hasModule(EMPREENDIMENTO_APP_STORE_MODULE_NAME))
+        store.unregisterModule(EMPREENDIMENTO_APP_STORE_MODULE_NAME);
     });
-    const permissions = computed(
-      () => store.getters["app-usuarios/getPermissionsList"]
-    );
+    const empresasList = computed(() => store.getters["app-empreendimentos/getEmpresasList"]);
+
     const indexEdicao = ref(false);
     const itemData = reactive({});
     const valid = ref(false);
     const form = ref(null);
     const search = ref("");
     const item = ref({
-      title: "",
-      id_permission: 0,
-      to: "",
-      ordem: "",
-      menu_id: "",
-      icon: ""
+        name: "",
+        fone: "",
+        status: "", 
+        logo: [], 
+        endereco: "", 
+        description: "", 
+        id_empresa: [], 
+        slug: ""
     });
 
     const dialogRemove = ref(false);
@@ -348,10 +412,13 @@ export default {
       options,
       selectedRows,
       fetchItems,
-    } = useUsuariosList();
+      resolveStatusVariant,
+      resolveNameStatusVariant,
+      resolvedRequired
+    } = useEmpreendimentoList();
     const formTitle = computed(() => {
-      if (indexEdicao.value === false) return "menu";
-      if (indexEdicao.value === true) return "menu";
+      if (indexEdicao.value === false) return "empreendimento";
+      if (indexEdicao.value === true) return "empreendimento";
     });
 
     function insert() {
@@ -369,7 +436,7 @@ export default {
       this.dialogRemove = true;
     }
     function removerItem() {
-      store.dispatch("app-usuarios/removeItem", this.itemData.id).then(() => {
+      store.dispatch("app-empreendimentos/removeItem", this.itemData.id).then(() => {
         this.dialogRemove = false;
         fetchItems();
         store.dispatch("module/openSnackBar", {
@@ -385,16 +452,28 @@ export default {
     }
     function closeModal() {
       item.value = [];
-      store.commit("app-usuarios/setIndexEdicao", false);
+      store.commit("app-empreendimentos/setIndexEdicao", false);
       isAddItem.value = false;
     }
     const validate = () => {
       form.value.validate();
     };
     const onSubmit = () => {
-      if (valid.value) {
+       if (valid.value) {
+        const formData = new FormData();
+        formData.append('id', item.value.id)
+        formData.append('uuid', item.value.uuid)
+        formData.append('name', item.value.name);
+        formData.append('fone', item.value.fone);
+        formData.append('status', item.value.status);
+        formData.append('logo', item.value.logo);
+        formData.append('id_empresa', item.value.id_empresa);
+        formData.append('description', item.value.description);
+        formData.append('slug', item.value.slug);
+        formData.append('endereco', item.value.endereco);
+
         if (!indexEdicao.value) {
-          store.dispatch("app-usuarios/addItem", item.value).then(() => {
+          store.dispatch("app-empreendimentos/addItem", formData).then(() => {
             store.dispatch("module/openSnackBar", {
               color: "success",
               timeout: 10000,
@@ -404,7 +483,7 @@ export default {
           });          
         } else {
           store
-            .dispatch("app-usuarios/editItem", {
+            .dispatch("app-empreendimentos/editItem", {
               id: item.value.id,
               dados: item.value,
             })
@@ -422,9 +501,9 @@ export default {
       }
     };
     return {
+      empresasList,
       itemsListTable,
       tableColumns,
-      permissions,
       search,
       totalItemsListTable,
       loading,
@@ -450,8 +529,11 @@ export default {
       valid,
       validate,
       indexEdicao,
+      resolveStatusVariant,
+      resolveNameStatusVariant,
+      resolvedRequired,
 
-      validators: { required },
+      validators: { required, urlValidator, emailValidator },
 
       icons: {
         mdiSquareEditOutline,
