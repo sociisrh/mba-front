@@ -23,7 +23,7 @@
         <div class="d-flex align-center flex-wrap">
           <v-btn color="primary" class="mb-4 me-3" @click.stop="insert()">
             <v-icon>{{ icons.mdiPlus }}</v-icon>
-            <span>Novo menu</span>
+            <span>Novo usuario</span>
           </v-btn>
 
           <v-menu bottom left>
@@ -73,6 +73,36 @@
         :search="search"
         show-select
       >
+        <!-- Role -->
+        <template #[`item.role`]="{ item }">
+          <div class="d-flex align-center">
+            <v-avatar
+              size="30"
+              :color="resolveUserRoleVariant(item.role)"
+              :class="`v-avatar-light-bg ${resolveUserRoleVariant(
+                item.role
+              )}--text me-3`"
+            >
+              <v-icon size="18" :color="resolveUserRoleVariant(item.role)">
+                {{ resolveUserRoleIcon(item.role) }}
+              </v-icon>
+            </v-avatar>
+            <span class="text-capitalize">{{
+              item.role === false ? "Sem papel" : item.role
+            }}</span>
+          </div>
+        </template>
+        <!-- status -->
+        <template #[`item.status`]="{ item }">
+          <v-chip
+            small
+            :color="resolveStatusVariant(item.status)"
+            :class="`${resolveStatusVariant(item.status)}--text`"
+            class="v-chip-light-bg font-weight-semibold text-capitalize"
+          >
+            {{ resolveNameStatusVariant(item.status) }}
+          </v-chip>
+        </template>
         <!-- created_at -->
         <template #[`item.created_at`]="{ item }">
           <span>{{ item.created_at | dateTimeFormatBr() }}</span>
@@ -106,6 +136,14 @@
                     {{ icons.mdiPencilOutline }}
                   </v-icon>
                   <span>Editar</span>
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item @click.stop="resetPassword(item)">
+                <v-list-item-title>
+                  <v-icon size="20" class="me-2">
+                    {{ icons.mdiPencilOutline }}
+                  </v-icon>
+                  <span>Reiniciar senha</span>
                 </v-list-item-title>
               </v-list-item>
 
@@ -151,7 +189,7 @@
             <div class="row">
               <div class="col-12">
                 <v-text-field
-                  v-model="item.title"
+                  v-model="item.name"
                   :rules="[validators.required]"
                   outlined
                   dense
@@ -163,75 +201,73 @@
               </div>
               <div class="col-12">
                 <v-text-field
-                  v-model="item.icon"
-                  :rules="[validators.required]"
+                  v-model="item.email"
+                  :rules="[validators.required, validators.emailValidator]"
                   outlined
+                  type="email"
                   dense
-                  label="Icone"
+                  label="E-mail"
                   hide-details="auto"
                   class=""
-                  data-vv-as="Icone"
-                ></v-text-field>
-              </div>
-              <div class="col-12">
-                <v-text-field
-                  v-model="item.to"
-                  :rules="[validators.required]"
-                  outlined
-                  dense
-                  label="Rota"
-                  hide-details="auto"
-                  class=""
-                  data-vv-as="Rota"
+                  data-vv-as="E-mail"
                 ></v-text-field>
               </div>
               <div class="col-12">
                 <v-select
-                  v-model="item.id_permission"
-                  :items="permissions"
+                  v-model="item.role"
+                  :items="roles"
+                  :rules="[resolvedRequired]"
                   item-text="name"
                   item-value="id"
-                  label="Permissão"
+                  label="Papel"
                   outlined
                   hide-details="auto"
-                  dense       
-                  id="id_permission"
-                  name="id_permission"  
-                  requiredrequired       
+                  dense
+                  id="id"
+                  name="name"
                 >
                 </v-select>
-                
-              </div>              
+              </div>
               <div class="col-12">
-                <div class="row">
-                  <div class="col-8">
-                    <v-autocomplete
-                      v-model="item.menu_id"
-                      :items="itemsListTable"
-                      item-text="title"
-                      item-value="id"
-                      label="Menu pai"
-                      outlined
-                      hide-details="auto"
-                      class=""
-                      data-vv-as="Menu pai"
-                      dense
-                    >
-                    </v-autocomplete>
-                  </div>
-                  <div class="col-4">
-                    <v-text-field
-                      v-model="item.ordem"
-                      outlined
-                      dense
-                      label="Ordem"
-                      hide-details="auto"
-                      type="number"
-                      class=""
-                      data-vv-as="Ordem"
-                    ></v-text-field>
-                  </div>
-                </div>
+                <v-autocomplete
+                  v-model="item.id_empresa"
+                  :items="empresas"
+                  :rules="[resolvedRequired]"
+                  item-text="name"
+                  item-value="id"
+                  label="Empresas"
+                  outlined
+                  hide-details="auto"
+                  dense
+                  id="id"
+                  name="name"
+                >
+                </v-autocomplete>
+              </div>
+              <div class="col-12">
+                <v-autocomplete
+                  v-model="item.empreendimentos"
+                  :items="empreendimentos"
+                  item-text="name"
+                  item-value="id"
+                  label="Empreendimentos"
+                  outlined
+                  hide-details="auto"
+                  dense
+                  id="id"
+                  name="name"
+                  multiple
+                >
+                </v-autocomplete>
+              </div>
+              <div class="col-12">
+                <v-file-input
+                  v-model="item.avatar"
+                  label="Foto"
+                  accept=".png, .jpg, .jpeg"
+                  outlined
+                  dense
+                ></v-file-input>
               </div>
             </div>
           </v-card-text>
@@ -305,7 +341,7 @@ import {
 } from "@vue/composition-api";
 import storeModule from "./storeModule";
 import useUsuariosList from "./useUsuariosList";
-import { required } from "@core/utils/validation";
+import { required, emailValidator } from "@core/utils/validation";
 
 export default {
   name: "Gestao-usuarios",
@@ -320,21 +356,26 @@ export default {
       if (store.hasModule(USUARIOS_APP_STORE_MODULE_NAME))
         store.unregisterModule(USUARIOS_APP_STORE_MODULE_NAME);
     });
-    const permissions = computed(
-      () => store.getters["app-usuarios/getPermissionsList"]
+    const roles = computed(() => store.getters["app-usuarios/getRolesList"]);
+    const empreendimentos = computed(
+      () => store.getters["app-usuarios/getEmpreendimentosList"]
     );
+    const empresas = computed(
+      () => store.getters["app-usuarios/getEmpresasList"]
+    );
+
     const indexEdicao = ref(false);
     const itemData = reactive({});
     const valid = ref(false);
     const form = ref(null);
     const search = ref("");
     const item = ref({
-      title: "",
-      id_permission: 0,
-      to: "",
-      ordem: "",
-      menu_id: "",
-      icon: ""
+      name: "",
+      email: "",
+      avatar: [],
+      id_empresa: "",
+      empreendimentos: [],
+      role: "",
     });
 
     const dialogRemove = ref(false);
@@ -348,10 +389,15 @@ export default {
       options,
       selectedRows,
       fetchItems,
+      resolveStatusVariant,
+      resolveNameStatusVariant,
+      resolveUserRoleVariant,
+      resolvedRequired,
+      resolveUserRoleIcon,
     } = useUsuariosList();
     const formTitle = computed(() => {
-      if (indexEdicao.value === false) return "menu";
-      if (indexEdicao.value === true) return "menu";
+      if (indexEdicao.value === false) return "usuario";
+      if (indexEdicao.value === true) return "usuario";
     });
 
     function insert() {
@@ -388,20 +434,31 @@ export default {
       store.commit("app-usuarios/setIndexEdicao", false);
       isAddItem.value = false;
     }
+    function resetPassword(item) {}
     const validate = () => {
       form.value.validate();
     };
     const onSubmit = () => {
       if (valid.value) {
+        const formData = new FormData();
+
+        formData.append('name', item.value.name);
+        formData.append('email', item.value.email);
+        formData.append('status', item.value.status);
+        formData.append('avatar', item.value.avatar);
+        formData.append('id_empresa', item.value.id_empresa);
+        formData.append('empreendimentos', item.value.empreendimentos);
+        formData.append('role', item.value.role);
+
         if (!indexEdicao.value) {
-          store.dispatch("app-usuarios/addItem", item.value).then(() => {
+          store.dispatch("app-usuarios/addItem", formData).then(() => {
             store.dispatch("module/openSnackBar", {
               color: "success",
               timeout: 10000,
               text: "Item salvo com sucesso.",
             });
             fetchItems();
-          });          
+          });
         } else {
           store
             .dispatch("app-usuarios/editItem", {
@@ -415,7 +472,7 @@ export default {
                 text: "Item atualizado com sucesso.",
               });
             });
-        }        
+        }
         closeModal();
       } else {
         validate();
@@ -424,7 +481,9 @@ export default {
     return {
       itemsListTable,
       tableColumns,
-      permissions,
+      roles,
+      empresas,
+      empreendimentos,
       search,
       totalItemsListTable,
       loading,
@@ -439,6 +498,7 @@ export default {
       insert,
       remover,
       removerItem,
+      resetPassword,
       closeModalRemover,
       closeModal,
       valid,
@@ -450,8 +510,13 @@ export default {
       valid,
       validate,
       indexEdicao,
+      resolveStatusVariant,
+      resolveNameStatusVariant,
+      resolvedRequired,
+      resolveUserRoleVariant,
+      resolveUserRoleIcon,
 
-      validators: { required },
+      validators: { required, emailValidator },
 
       icons: {
         mdiSquareEditOutline,
