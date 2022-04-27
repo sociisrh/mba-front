@@ -66,5 +66,14 @@ export default [
       requiresAuth: true,
     },
   },
+  {
+    path: "/adm/fornecedores",
+    name: "/adm/fornecedores",
+    component: () => import("@/views/Adm/Fornecedores/Index.vue"),
+    meta: {
+      layout: "content",
+      requiresAuth: true,
+    },
+  },
   
 ];

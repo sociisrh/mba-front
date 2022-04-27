@@ -37,6 +37,7 @@
     "secure-ls": "^1.2.6"
   },
   "devDependencies": {
+    "@mdi/font": "^6.6.96",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
