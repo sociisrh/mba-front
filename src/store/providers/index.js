@@ -6,17 +6,22 @@ export default {
     itemsList: [],
     item: [], 
     indexEdicao: false,
+    listaEmpresas: []
    },
   getters: {
     getItemsList: state => state.itemsList,
     getItem: state => state.item,
-    getIndexEdicao: state => state.indexEdicao
+    getIndexEdicao: state => state.indexEdicao,
+    getListaEmpresas: state => state.listaEmpresas
+
 
   },
   mutations: {
     setItemList: (state, value) => { state.itemsList = value },
     setItem: (state, value) => { state.item = value },
-    setIndexEdicao: (state, value) => { state.indexEdicao = value },    
+    setIndexEdicao: (state, value) => { state.indexEdicao = value },
+    setListaEmpresas: (state, value) => { state.listaEmpresas = value },    
+
   },
   actions: {
     fetchItems(ctx) {
@@ -27,6 +32,7 @@ export default {
             const dados = response.data.data  
   
             store.commit('providers/setItemList', dados.fornecedor)
+            store.commit('providers/setListaEmpresas', dados.empresas)
             return resolve(response)
           })
           .catch(error => reject(error))

@@ -16,7 +16,7 @@
     >
       <template slot="data-table">
         <v-data-table
-          :loading="loadingControl.dataTable"
+          :loading="loadingTable"
           :headers="computedHeaders"
           :items="listaItens"
           :search="searchTextField"
@@ -147,7 +147,26 @@
                 trim
               />
             </v-col>
-
+            <div class="col-12">
+              <v-select
+                :items="listaEmpresas"
+                outlined
+                dense
+                item-text="name"
+                item-value="id"
+                label="Empresa responsavel"
+                hide-details="auto"
+                data-vv-as="Empresa responsavel"
+                persistent-hint
+                v-model="objetoEdicao.id_empresa"
+                :hint="errors.first('id_empresa')"
+                :error="errors.collect('id_empresa').length ? true : false"
+                v-validate="'required'"
+                data-vv-scope="fornecedor"
+                data-vv-validate-on="change"       
+                trim
+              ></v-select>
+              </div>  
           </v-row>
         </v-container>
       </template>
@@ -197,6 +216,7 @@ export default {
       image: logo,
       searchTextField: "",
       dialog: false,
+      loadingTable:false,
       loadingControl: {
         dataTable: false,
         loadingSalvar: false,
@@ -251,7 +271,8 @@ export default {
         nome: "",
         email: "",
         responsavel: "",
-        status: ""
+        status: "",
+        id_empresa: ""
       },
       indexEdicao: 0,
       edicao: false
@@ -273,7 +294,6 @@ export default {
     salvar() {
       this.$validator.validate("fornecedor.*").then((result) => {
         if (result) {
-          console.log(this.edicao);
           this.loadingExcluir = true;
           this.loadingSalvar = true;
           let url =
@@ -304,7 +324,6 @@ export default {
               });
             })
             .catch((error) => {
-              console.log(error);
               this.$store.dispatch("module/openSnackBar", {
                 color: "error",
                 timeout: 3000,
@@ -324,15 +343,19 @@ export default {
       });
     },
     remover(item, openModal = false) {
+      
       if (openModal) {
         this.item = item;
         this.dialogDelete = true;
       } else {
         this.loadingTable = true;
+        let item = this.item;
+        this.indexEdicao = this.listaItens.indexOf(item);
         this.$store
           .dispatch("providers/removeItem", this.item.id)
           .then((response) => {
-            if (response.data === true) {
+            if (response.data.data === true) {            
+              this.listaItens.pop(this.indexEdicao);
               this.$store.dispatch("module/openSnackBar", {
                 color: "success",
                 timeout: 3000,
@@ -364,14 +387,14 @@ export default {
       if (status === 'A') return 'success'
       if (status === 'I') return 'secondary'
 
-      return 'primary'
+      return 'warning'
     },
     resolveNameStatusVariant(status) {
       if (status === 'P') return 'PENDENTE'
       if (status === 'A') return 'ATIVO'
       if (status === 'I') return 'INATIVO'
 
-      return 'primary'
+      return 'PENDENTE'
     }
   },
   computed: {
@@ -386,6 +409,14 @@ export default {
       },
       set(value) {
         store.dispatch("providers/setItemList", value);
+      },
+    },
+    listaEmpresas: {
+      get() {
+        return store.getters["providers/getListaEmpresas"];
+      },
+      set(value) {
+        store.dispatch("providers/setListaEmpresas", value);
       },
     },
     formTitle() {
