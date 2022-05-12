@@ -148,7 +148,6 @@
           </template>
         </v-data-table>
       </v-card-text>
-
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="default" outlined @click.stop="show = false">
