@@ -75,5 +75,14 @@ export default [
       requiresAuth: true,
     },
   },
+  {
+    path: "/adm/planos/lista",
+    name: "/adm/planos/lista",
+    component: () => import("@/views/Adm/Planos/Index.vue"),
+    meta: {
+      layout: "content",
+      requiresAuth: true,
+    },
+  },
   
 ];

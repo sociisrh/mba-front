@@ -30,7 +30,6 @@
         <slot name="advancedSearch"></slot>
         <v-spacer></v-spacer>
         <div class="d-flex align-center flex-wrap">
-
           <v-dialog
               v-model="dialogInsertUpdateElement"
               :persistent="true"
@@ -117,7 +116,7 @@
             >
               mdi-export-variant
             </v-icon>
-            <span>Export</span>
+            <span>Exportar</span>
           </v-btn>
         </div>
       </v-card-text>

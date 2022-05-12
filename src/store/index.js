@@ -6,6 +6,9 @@ import auth from './auth'
 import users from './users'
 import module from './modules/snackBarModule'
 import providers from './providers'
+import systems from './systems'
+import components from './components'
+import empresas from './empresas'
 
 Vue.use(Vuex)
 
@@ -18,7 +21,10 @@ export default new Vuex.Store({
     app,
     auth,
     module,
+    empresas,
     users,
-    providers
+    providers,
+    systems,
+    components
   },
 })

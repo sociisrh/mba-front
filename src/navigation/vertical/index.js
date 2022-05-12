@@ -70,8 +70,14 @@ export default [
     children: [
       {
         title: 'Lista',
-        to: 'planos-list',
+        to: '/adm/planos/lista',
         resource: 'planos',
+        action: 'view'
+      },
+      {
+        title: 'Fornecedores',
+        to: '/adm/fornecedores',
+        resource: 'fornecedores',
         action: 'view'
       },
       {

@@ -30,16 +30,7 @@ export default [
       layout: 'content',
       requiresAuth: true
     },
-  },
-  {
-    path: '/second-page',
-    name: 'second-page',
-    component: () => import('@/views/SecondPage.vue'),
-    meta: {
-      layout: 'content',
-      requiresAuth: true
-    },
-  },
+  },  
   {
     path: '/authorize/github/callback',
     name: 'auth-login-github',
